@@ -45,7 +45,7 @@ class SpotifyBot(spotipy.Spotify):
             if playlist_name.lower() in items["name"].lower():
                 id = items["id"]
                 ext_urls = items["external_urls"]["spotify"]
-                return (id, ext_urls)
+                return (id, ext_urls, items["name"])
         raise ValueError("Playlist does not exist")
 
 

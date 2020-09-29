@@ -16,7 +16,7 @@ class SpotifyClient(commands.Cog):
     @commands.command()
     async def freeze(self, ctx):
         users = [user["display_name"] for user in self.spotify.users]
-        out = "Users\n" + '\n'.join(users)
+        out = "Users\n" + "\n".join(users)
         await ctx.send(out)
 
     @commands.command()
@@ -29,3 +29,20 @@ class SpotifyClient(commands.Cog):
         self.spotify.register_user(user_id, display_name)
         print(f"User registration: {user_id} as {display_name}")
         await ctx.send(f"User {display_name} now registered.")
+
+    @commands.command()
+    async def playlist(self, ctx, *playlist_info):
+        user, keyword = playlist_info
+        if user and keyword:
+            (
+                pl_id,
+                url,
+                pl_name,
+            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+                user, keyword
+            )
+            print(f"Playlist found: {pl_id}")
+            pl_embed = discord.Embed(Title="pl_name", description="Playlist request")
+            pl_embed.add_field(name="Requested by", value=user, inline=True)
+            pl_embed.add_field(name="Link", value=url, inline=True)
+            await ctx.send(embed=pl_embed)
