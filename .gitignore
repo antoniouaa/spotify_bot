@@ -1,0 +1,6 @@
+credentials.json
+venv
+users.json
+discord.log
+request_test.ipynb
+test*.py
