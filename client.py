@@ -1,6 +1,7 @@
 from spotify_bot import SpotifyBot
 
 import json
+import time
 import discord
 from discord.ext import commands
 
@@ -42,7 +43,35 @@ class SpotifyClient(commands.Cog):
                 user, keyword
             )
             print(f"Playlist found: {pl_id}")
-            pl_embed = discord.Embed(Title="pl_name", description="Playlist request")
+            pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
             pl_embed.add_field(name="Requested by", value=user, inline=True)
             pl_embed.add_field(name="Link", value=url, inline=True)
             await ctx.send(embed=pl_embed)
+
+    @commands.command(aliases=["play_from", "play_list"])
+    async def play_from_playlist(self, ctx, *request_info):
+        user, keyword = request_info
+        if user and keyword:
+            (
+                pl_id,
+                url,
+                pl_name,
+            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+                user, keyword
+            )
+            tracks = self.spotify.playlist_items(
+                pl_id,
+                offset=0,
+                fields="items.track.id,items.track.name,items.track.artists,total",
+                additional_types=["track"],
+            )
+            print(tracks)
+            pl_embed = discord.Embed(title="Results", description="Query Results")
+            for track in tracks["items"]:
+                name = track["track"]["name"]
+                artists = track["track"]["artists"]
+                artists_name = " ".join(artist["name"] for artist in artists)
+                await ctx.send(f"!play {name} {artists_name}")
+                time.sleep(0.75)
+            total = tracks["total"]
+            await ctx.send(f"{total} tracks queued!")
