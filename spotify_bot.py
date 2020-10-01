@@ -14,7 +14,8 @@ class SpotifyBot(spotipy.Spotify):
             )
         )
         self.users = self._get_users()
-
+    
+    # This function gets the users
     def _get_users(self):
         with open("users.json") as users_f:
             return json.loads(users_f.read())["users"]
