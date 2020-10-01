@@ -65,7 +65,6 @@ class SpotifyClient(commands.Cog):
                 fields="items.track.id,items.track.name,items.track.artists,total",
                 additional_types=["track"],
             )
-            print(tracks)
             pl_embed = discord.Embed(title="Results", description="Query Results")
             for track in tracks["items"]:
                 name = track["track"]["name"]
