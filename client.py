@@ -33,20 +33,30 @@ class SpotifyClient(commands.Cog):
 
     @commands.command()
     async def playlist(self, ctx, *playlist_info):
-        user, keyword = playlist_info
-        if user and keyword:
-            (
-                pl_id,
-                url,
-                pl_name,
-            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
-                user, keyword
-            )
-            print(f"Playlist found: {pl_id}")
-            pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
-            pl_embed.add_field(name="Requested by", value=user, inline=True)
-            pl_embed.add_field(name="Link", value=url, inline=True)
-            await ctx.send(embed=pl_embed)
+        err=False;
+        if len(playlist_info)!=2:
+            err=True;
+        else:
+            user, keyword = playlist_info
+            if user and keyword:
+                (
+                    pl_id,
+                    url,
+                    pl_name,
+                ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+                    user, keyword
+                )
+                print(f"Playlist found: {pl_id}")
+                pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
+                pl_embed.add_field(name="Requested by", value=user, inline=True)
+                pl_embed.add_field(name="Link", value=url, inline=True)
+                await ctx.send(embed=pl_embed)
+            else:
+                err=True;
+
+        if err:
+            await ctx.send("--help\nProper usage:\n$playlist <spotify user name> <playlist name>")
+            raise discord.ClientException("Improper command usage")
 
     @commands.command(aliases=["play_from", "play_list"])
     async def play_from_playlist(self, ctx, *request_info):
