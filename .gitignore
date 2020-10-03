@@ -1,5 +1,26 @@
-credentials.json
-venv
+# Virtual environments
+venv/
+env/
+
+# Editor files
+.vscode/
+.*.swp
+.vs/
+*.sln
+*pyproj
+*pyproj.user
+
+# Config files
+/config*
+
+# Artifacts
+**/__pycache__
+
+# Databases
 users.json
+
+# Logs
 discord.log
+
+# Tests
 *test*.*
