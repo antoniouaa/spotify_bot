@@ -6,7 +6,7 @@ import json
 
 
 class SpotifyBot(spotipy.Spotify):
-    def __init__(self):
+    def __init__(self, spotify_token, spotify_secret):
         self.client_id, self.client_secret = self._get_client_creds()
         super(SpotifyBot, self).__init__(
             auth_manager=SpotifyClientCredentials(
@@ -14,8 +14,7 @@ class SpotifyBot(spotipy.Spotify):
             )
         )
         self.users = self._get_users()
-    
-    # This function gets the users
+
     def _get_users(self):
         with open("users.json") as users_f:
             return json.loads(users_f.read())["users"]
@@ -48,8 +47,3 @@ class SpotifyBot(spotipy.Spotify):
                 ext_urls = items["external_urls"]["spotify"]
                 return (id, ext_urls, items["name"])
         raise ValueError("Playlist does not exist")
-
-
-sp = SpotifyBot()
-# id_, ext_url = sp.get_user_playlist_by_keyword_and_display_name("alex", "newrock")
-# sp.register_user(user_id="eriksofs", display_name="Erik Sophocleous")

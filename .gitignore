@@ -20,7 +20,7 @@ env/
 users.json
 
 # Logs
-discord.log
+*.log
 
 # Tests
 *test*.*
