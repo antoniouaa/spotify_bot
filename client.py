@@ -25,7 +25,7 @@ class SpotifyClient(commands.Cog):
         display_name = " ".join(user_info[:-1])
         user_id = user_info[-1]
         if user_id is None or display_name is None:
-            await ctx.send("--help\nProper usage:\n$register <id> <display_name>")
+            await ctx.send("--help\nProper usage:\n$register <spotify id> <display name>")
             raise discord.ClientException("Improper command usage")
         self.spotify.register_user(user_id, display_name)
         print(f"User registration: {user_id} as {display_name}")
@@ -33,32 +33,31 @@ class SpotifyClient(commands.Cog):
 
     @commands.command()
     async def playlist(self, ctx, *playlist_info):
-        user, keyword = playlist_info
-        if user and keyword:
-            (
-                pl_id,
-                url,
-                pl_name,
-            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
-                user, keyword
-            )
-            print(f"Playlist found: {pl_id}")
-            pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
-            pl_embed.add_field(name="Requested by", value=user, inline=True)
-            pl_embed.add_field(name="Link", value=url, inline=True)
-            await ctx.send(embed=pl_embed)
+        if len(playlist_info)!=2:
+            await ctx.send("--help\nCommand `playlist`:\n\tReturns a link to the spotify playlist requested.\nProper usage:\n\t`$playlist <display name> <playlist name>`")
+            raise discord.ClientException("Improper command usage")
+        else:
+            try:
+                user, keyword = playlist_info
+                (pl_id, url,npl_name,) = self.spotify.get_user_playlist_by_keyword_and_display_name(user, keyword)
+                print(f"Playlist found: {pl_id}")
+                pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
+                pl_embed.add_field(name="Requested by", value=user, inline=True)
+                pl_embed.add_field(name="Link", value=url, inline=True)
+                await ctx.send(embed=pl_embed)
+            except ValueError as e:
+                await ctx.send(str(e))
+                await ctx.send("--help\nCommand `playlist`:\n\tReturns a link to the spotify playlist requested.\nProper usage:\n\t`$playlist <display name> <playlist name>`")
+                raise
 
     @commands.command(aliases=["play_from", "play_list"])
     async def play_from_playlist(self, ctx, *request_info):
-        user, keyword = request_info
-        if user and keyword:
-            (
-                pl_id,
-                url,
-                pl_name,
-            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
-                user, keyword
-            )
+        if len(request_info)!=2:
+            await ctx.send("--help\nCommand `play_from`:\n\tPlays songs from the spotify playlist requested.\nProper usage:\n\t`$play_from <display name> <playlist name>`")
+            raise discord.ClientException("Improper command usage")
+        else:
+            user, keyword = request_info
+            (pl_id, url,npl_name,) = self.spotify.get_user_playlist_by_keyword_and_display_name(user, keyword)
             tracks = self.spotify.playlist_items(
                 pl_id,
                 offset=0,

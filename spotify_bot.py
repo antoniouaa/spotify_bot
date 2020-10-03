@@ -48,11 +48,8 @@ class SpotifyBot(spotipy.Spotify):
                 ext_urls = items["external_urls"]["spotify"]
                 return (id, ext_urls, items["name"])
         raise ValueError("Playlist does not exist")
-<<<<<<< HEAD
-=======
 
 
 sp = SpotifyBot()
 # id_, ext_url = sp.get_user_playlist_by_keyword_and_display_name("alex", "newrock")
 # sp.register_user(user_id="eriksofs", display_name="Erik Sophocleous")
->>>>>>> 7761d2ae1d89ea4fe183be7c5561c2ebe86ad673
