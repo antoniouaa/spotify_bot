@@ -1,4 +1,0 @@
-git remote add upstream https://github.com/antoniouaa/spotify_bot.git
-git fetch upstream
-git merge upstream/master
-
