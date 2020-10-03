@@ -1,4 +1,4 @@
-# ~~SpotiPyBot~~ SpotifyBot is now brought into this cruel world
+# SpotifyBot is now brought into this cruel world
 
 Syke!
 
