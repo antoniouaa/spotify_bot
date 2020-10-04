@@ -7,8 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED 1
 
-# Update 
+# Update and install dependencies
 RUN apt-get -y update \
+    && apt-get -y install ffmpeg \
     && apt-get -y install python3 \
     && apt-get -y install python3-pip
 
