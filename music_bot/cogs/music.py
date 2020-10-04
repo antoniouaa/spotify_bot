@@ -70,15 +70,20 @@ class Music(commands.Cog):
 
     async def playYT(self, context):
         def ytNext(e):
-            print(f"play err: {e}, \nytNext: {self.playQueue}")
-            if len(self.playQueue) != 0:
+            if self.playQueue:
                 self.playQueue.pop(0)
                 asyncio.run_coroutine_threadsafe(self.playYT(context), self.loop)
 
         async with context.typing():
-            player = await YTDLSource.from_url(self.playQueue[0], loop=self.bot.loop)
-            context.voice_client.play(player, after=ytNext)
-        await context.send(f"Now playing: {player.title}")
+            if self.playQueue:
+                player = await YTDLSource.from_url(
+                    self.playQueue[0], loop=self.bot.loop
+                )
+                context.voice_client.play(player, after=ytNext)
+                await context.send(f"Now playing: {player.title}")
+            else:
+                await context.send(f"Playlist empty")
+        
 
     @commands.command(name="yt", aliases=["youtube", "play"])
     async def yt(self, ctx, *, url):
