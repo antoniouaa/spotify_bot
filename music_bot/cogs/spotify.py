@@ -26,7 +26,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
             )
         )
 
-    #TODO: fix this function  
+    # TODO: fix this function
     def get_user_playlist_by_keyword_and_display_name(
         self, display_name, playlist_name
     ):
@@ -80,9 +80,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                     pl_id,
                     url,
                     pl_name,
-                ) = self.get_user_playlist_by_keyword_and_display_name(
-                    user, keyword
-                )
+                ) = self.get_user_playlist_by_keyword_and_display_name(user, keyword)
                 print(f"Playlist found: {pl_id}")
                 pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
                 pl_embed.add_field(name="Requested by", value=user, inline=True)
@@ -107,9 +105,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 pl_id,
                 url,
                 npl_name,
-            ) = self.get_user_playlist_by_keyword_and_display_name(
-                user, keyword
-            )
+            ) = self.get_user_playlist_by_keyword_and_display_name(user, keyword)
             tracks = self.spotify.playlist_items(
                 pl_id,
                 offset=0,
