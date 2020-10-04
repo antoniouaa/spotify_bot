@@ -9,6 +9,7 @@ from discord.ext import commands
 from ..db import DB
 from .music import Music
 
+
 class Spotify(commands.Cog, spotipy.Spotify):
     def __init__(self, config):
         self.db_config = (
@@ -44,8 +45,9 @@ class Spotify(commands.Cog, spotipy.Spotify):
 
     @commands.command(name="freeze", aliases=["list", "show"])
     async def freeze(self, ctx):
-        users = [user["display_name"] for user in self.spotify.users]
-        out = "Users\n" + "\n".join(users)
+        users = self.db.fetch_all_users()
+        names_of_users = [f'{user["user"]}# {user["spotify_id"]}' for user in users]
+        out = "Users\n" + "\n".join(names_of_users)
         await ctx.send(out)
 
     @commands.command(name="register", aliases=["signup"])
