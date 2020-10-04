@@ -9,7 +9,6 @@ from discord.ext import commands
 from ..db import DB
 from .music import Music
 
-
 class Spotify(commands.Cog, spotipy.Spotify):
     def __init__(self, config):
         self.db_config = (
@@ -25,6 +24,19 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 client_id=self.spotify_id, client_secret=self.spotify_secret
             )
         )
+
+    #TODO: fix this function  
+    def get_user_playlist_by_keyword_and_display_name(
+        self, display_name, playlist_name
+    ):
+        user = self.get_user_id(display_name)
+        playlist = self.user_playlists(user=user, limit=10)
+        for items in playlist["items"]:
+            if playlist_name.lower() in items["name"].lower():
+                id = items["id"]
+                ext_urls = items["external_urls"]["spotify"]
+                return (id, ext_urls, items["name"])
+        raise ValueError("Playlist does not exist")
 
     @commands.command()
     async def hello(self, ctx):
@@ -66,7 +78,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                     pl_id,
                     url,
                     pl_name,
-                ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+                ) = self.get_user_playlist_by_keyword_and_display_name(
                     user, keyword
                 )
                 print(f"Playlist found: {pl_id}")
@@ -93,7 +105,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 pl_id,
                 url,
                 npl_name,
-            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+            ) = self.get_user_playlist_by_keyword_and_display_name(
                 user, keyword
             )
             tracks = self.spotify.playlist_items(
