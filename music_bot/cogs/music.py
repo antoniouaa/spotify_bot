@@ -85,7 +85,8 @@ class Music(commands.Cog):
                 await context.send(f"Now playing: {player.title}")
             else:
                 await context.send(f"Playlist empty")
-        
+
+                
     @commands.command(name="play_spotify",aliases=["play_from"])
     async def play_spotify(self,ctx,*args):
         
