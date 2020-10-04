@@ -22,9 +22,6 @@ users.json
 # Logs
 *.log
 
-# Tests
-*test*.*
-
 # Misc
 **/spotify_bot.py
 music_bot/config.ini

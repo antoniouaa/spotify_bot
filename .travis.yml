@@ -1,9 +1,28 @@
 language: python
+
+stages:
+  - black
+  - test
+
 python:
   - "3.6"
   - "3.7.4"
-  - "3.8.0"
+  - "3.8"
+
+jobs:
+  include:
+    - stage: black
+      python: "3.7.4"
+      script:
+        - black --version
+        - black .
+  allow_failures:
+    - python: "3.8"
+  fast_finish: true
+
 install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
-script: python3 -m unittest discover
+
+script:
+  - python3 -m unittest discover

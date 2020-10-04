@@ -10,11 +10,11 @@ class Config:
         self.config_sections = ["CREDENTIALS", "PERMISSIONS", "CHAT"]
         self.config_file = config_file
         config = configparser.ConfigParser(interpolation=None)
-        config.read(config_file, encoding="utf-8")
+        config.read(self.config_file, encoding="utf-8")
         if not self.config_sections == config.sections():
             raise ConfigurationError(
                 "One or more required Configuration sections are missing\n"
-                "Check your Configuration file",
+                f"Check your Configuration file: {config.sections()}\ninstead of {self.config_sections}"
             )
 
         self._TOKEN = config.get("CREDENTIALS", "TOKEN")
