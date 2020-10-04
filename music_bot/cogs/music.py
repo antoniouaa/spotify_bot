@@ -89,15 +89,13 @@ class Music(commands.Cog):
 
     @commands.command(name="play_spotify", aliases=["play_from"])
     async def play_spotify(self, ctx, *args):
-
         q = await self.sp.play_from_playlist(ctx, args[0], args[1])
         embedVar = discord.Embed(
             title="Added Playlist", description="Playlist info", color=0x00FF00
         )
         for i, s in enumerate(q):
-            embedVar.add_field(name=str(i) + ".", value=s, inline=True)
+            embedVar.add_field(name=f"{i}.", value=s, inline=True)
         await ctx.send(embed=embedVar)
-
         await ctx.send(f"Adding {len(q)} songs to queue")
         self.playQueue = self.playQueue + q
         if not ctx.voice_client.is_playing():
