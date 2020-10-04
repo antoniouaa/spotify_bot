@@ -83,7 +83,6 @@ class Music(commands.Cog):
                 await context.send(f"Now playing: {player.title}")
             else:
                 await context.send(f"Playlist empty")
-        
 
     @commands.command(name="yt", aliases=["youtube", "play"])
     async def yt(self, ctx, *, url):
