@@ -38,10 +38,4 @@ class Bot(commands.Bot):
         self.add_cog(Spotify(self.config))
         print("Loaded cog: Spotify")
 
-    @commands.command()
-    async def reload(self):
-        self.remove_cog("SpotifyClient")
-        self.remove_cog("MusicClient")
-        self.add_cog(Spotify(self.config))
-        self.add_cog(Music(self))
-        print(f"cogs reloaded!")
+    # TODO: reload cogs command

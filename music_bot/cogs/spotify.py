@@ -7,8 +7,7 @@ import discord
 from discord.ext import commands
 
 from ..db import DB
-
-# logger = logging.getLogger(__name__)
+from .music import Music
 
 
 class Spotify(commands.Cog, spotipy.Spotify):
@@ -108,7 +107,8 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 name = track["track"]["name"]
                 artists = track["track"]["artists"]
                 artists_name = " ".join(artist["name"] for artist in artists)
-                await ctx.send(f"!play {name} {artists_name}")
+                # await ctx.send(f"!play {name} {artists_name}")
+                Music.yt(f"{name} - {artists_name}")
                 time.sleep(0.75)
             total = tracks["total"]
             await ctx.send(f"{total} tracks queued!")
