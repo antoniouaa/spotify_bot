@@ -13,7 +13,7 @@ Copy the example config file in [/misc](/misc) and place it in the project root 
 With docker,
 
 ```
-docker build --tag music_bot
+docker build --tag music_bot .
 docker run -d --name music_bot
 ```
 
