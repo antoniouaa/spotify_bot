@@ -21,7 +21,7 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     try:
-        config = Config("config.ini")
+        config = Config(args.config_file)
     except IOError as err:
         print("No config file found")
         sys.exit(1)

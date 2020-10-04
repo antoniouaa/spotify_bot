@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from ..db import DB
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 class Spotify(commands.Cog, spotipy.Spotify):
@@ -37,7 +37,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
         out = "Users\n" + "\n".join(users)
         await ctx.send(out)
 
-    @commands.command(name="register", aliases=["join", "signup"])
+    @commands.command(name="register", aliases=["signup"])
     async def register(self, ctx, *user_info):
         if len(user_info) < 2:
             print(f"Error using the command: too few arguments ({ctx.author})")
