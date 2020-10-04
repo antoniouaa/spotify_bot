@@ -36,6 +36,6 @@ class Bot(commands.Bot):
         spotify = Spotify(self.config)
         self.add_cog(spotify)
         print("Loaded cog: Spotify")
-        music = Music(self)
+        music = Music(self, spotify)
         self.add_cog(music)
         print("Loaded cog: Music")
