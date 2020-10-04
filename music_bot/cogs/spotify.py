@@ -8,7 +8,7 @@ from discord.ext import commands
 
 from ..db import DB
 
-#logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class Spotify(commands.Cog, spotipy.Spotify):

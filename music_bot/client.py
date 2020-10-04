@@ -37,7 +37,6 @@ class Bot(commands.Bot):
         print("Loaded cog: Music")
         self.add_cog(Spotify(self.config))
         print("Loaded cog: Spotify")
-        
 
     @commands.command()
     async def reload(self):
