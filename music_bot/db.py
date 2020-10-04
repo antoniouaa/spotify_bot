@@ -11,12 +11,27 @@ class DB:
             f"mongodb+srv://{self.username}:{self.password}@cluster0.y6mfx.mongodb.net/{self.db_name}?retryWrites=true&w=majority"
         ).test
 
-    def _test_user_creation(self, id, name):
+    def register_new_user(self, id, name):
+        """Registers a new user"""
         inserted_doc = self.db.users.insert_one({"spotify_id": id, "user": name})
         return inserted_doc
 
+    def fetch_userid_by_username(self, name):
+        """Fetches a user's ID by their username"""
+        raw_user = self.db.users.find_one({"user": name.lower()})
+        user = raw_user["spotify_id"]
+        return user
+
     def fetch_all_users(self):
+        """Fetches all usernames and IDs"""
         raw_users = list(self.db.users.find({}))
         fields = ("spotify_id", "user")
         users = [{field: raw_user[field] for field in fields} for raw_user in raw_users]
         return users
+
+    def delete_user_by_display_name(self, name):
+        """Deletes a user if they exist by their username"""
+        if bool(self.db.users.find_one({"user": name.lower()})):
+            self.db.users.delete_one({"user": name})
+            return 204
+        return 404

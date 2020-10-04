@@ -17,6 +17,7 @@ class Bot(commands.Bot):
     def __init__(self, config):
         self.config = config
         self.start_time = datetime.utcnow()
+        self.cogs_ = ["spotify", "music"]
         super().__init__(
             command_prefix=self.config.COMMAND_PREFIX,
             description="music_bot - A music bot for the Kipriakon diskort server",
@@ -33,9 +34,9 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         print(f"Logged in as {self.user}")
-        self.add_cog(Music(self))
-        print("Loaded cog: Music")
-        self.add_cog(Spotify(self.config))
+        spotify = Spotify(self.config)
+        self.add_cog(spotify)
         print("Loaded cog: Spotify")
-
-    # TODO: reload cogs command
+        music = Music(self)
+        self.add_cog(music)
+        print("Loaded cog: Music")

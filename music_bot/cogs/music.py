@@ -45,7 +45,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
         )
 
         if "entries" in data:
-            # take first item from a playlist
             data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
@@ -59,23 +58,19 @@ class Music(commands.Cog):
         self.bot = bot
         self.playQueue = []
 
-    @commands.command()
+    @commands.command(name="join", aliases=["here", "voice"])
     async def join(self, ctx, *, channel: discord.VoiceChannel):
         """Joins a voice channel"""
-
         if ctx.voice_client is not None:
             return await ctx.voice_client.move_to(channel)
-
         await channel.connect()
 
     async def queueSong(self, keywords):
         self.playQueue.append(keywords)
 
     async def playYT(self, context):
-        # plays the first song in the playQueue list and removes it when finished or skipped
-
         def ytNext(e):
-            print("play err:", e, "\nytNext: ", self.playQueue)
+            print(f"play err: {e}, \nytNext: {self.playQueue}")
             if len(self.playQueue) != 0:
                 self.playQueue.pop(0)
                 asyncio.run_coroutine_threadsafe(self.playYT(context), self.loop)
@@ -83,38 +78,37 @@ class Music(commands.Cog):
         async with context.typing():
             player = await YTDLSource.from_url(self.playQueue[0], loop=self.bot.loop)
             context.voice_client.play(player, after=ytNext)
-        await context.send("Now playing: {}".format(player.title))
+        await context.send(f"Now playing: {player.title}")
 
-    @commands.command()
+    @commands.command(name="yt", aliases=["youtube", "play"])
     async def yt(self, ctx, *, url):
-        await ctx.send("Adding {} to queue".format(url))
+        """Queries youtube using the terms given and plays back the first result"""
+        await ctx.send(f"Adding {url} to queue")
         await self.queueSong(url)
         if not ctx.voice_client.is_playing():
             await self.playYT(ctx)
 
-    @commands.command()
+    @commands.command(name="skip", aliases=["next"])
     async def skip(self, ctx):
         ctx.voice_client.stop()
         await self.playYT(ctx)
 
-    @commands.command()
+    @commands.command(name="volume", aliases=["level", "vol"])
     async def volume(self, ctx, volume: int):
         """Changes the player's volume"""
-
         if ctx.voice_client is None:
             return await ctx.send("Not connected to a voice channel.")
-
         ctx.voice_client.source.volume = volume / 100
-        await ctx.send("Changed volume to {}%".format(volume))
+        await ctx.send(f"Changed volume to {volume}%")
 
-    @commands.command()
+    @commands.command(name="stop", aliases=["kill", "silence"])
     async def stop(self, ctx):
         """Stops and disconnects the bot from voice"""
-
         await ctx.voice_client.disconnect()
 
     @yt.before_invoke
     async def ensure_voice(self, ctx):
+        """Makes sure the bot is connected to a voice channel"""
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
