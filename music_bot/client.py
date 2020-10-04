@@ -10,6 +10,7 @@ import discord
 from discord.ext import commands
 
 from .cogs.spotify import Spotify
+from .cogs.music import Music
 
 
 class Bot(commands.Bot):
@@ -32,5 +33,9 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         print(f"Logged in as {self.user}")
+        self.add_cog(Music(self))
+        print("Loaded cog: Music")
         self.add_cog(Spotify(self.config))
         print("Loaded cog: Spotify")
+
+    # TODO: reload cogs command

@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from ..db import DB
+from .music import Music
 
 
 class Spotify(commands.Cog, spotipy.Spotify):
@@ -25,6 +26,19 @@ class Spotify(commands.Cog, spotipy.Spotify):
             )
         )
 
+    #TODO: fix this function  
+    def get_user_playlist_by_keyword_and_display_name(
+        self, display_name, playlist_name
+    ):
+        user = self.get_user_id(display_name)
+        playlist = self.user_playlists(user=user, limit=10)
+        for items in playlist["items"]:
+            if playlist_name.lower() in items["name"].lower():
+                id = items["id"]
+                ext_urls = items["external_urls"]["spotify"]
+                return (id, ext_urls, items["name"])
+        raise ValueError("Playlist does not exist")
+
     @commands.command()
     async def hello(self, ctx):
         await ctx.send("Hello back!")
@@ -36,7 +50,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
         out = "Users\n" + "\n".join(names_of_users)
         await ctx.send(out)
 
-    @commands.command(name="register", aliases=["join", "signup"])
+    @commands.command(name="register", aliases=["signup"])
     async def register(self, ctx, *user_info):
         if len(user_info) < 2:
             print(f"Error using the command: too few arguments ({ctx.author})")
@@ -66,7 +80,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                     pl_id,
                     url,
                     pl_name,
-                ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+                ) = self.get_user_playlist_by_keyword_and_display_name(
                     user, keyword
                 )
                 print(f"Playlist found: {pl_id}")
@@ -93,7 +107,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 pl_id,
                 url,
                 npl_name,
-            ) = self.spotify.get_user_playlist_by_keyword_and_display_name(
+            ) = self.get_user_playlist_by_keyword_and_display_name(
                 user, keyword
             )
             tracks = self.spotify.playlist_items(
@@ -107,7 +121,8 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 name = track["track"]["name"]
                 artists = track["track"]["artists"]
                 artists_name = " ".join(artist["name"] for artist in artists)
-                await ctx.send(f"!play {name} {artists_name}")
+                # await ctx.send(f"!play {name} {artists_name}")
+                Music.yt(f"{name} - {artists_name}")
                 time.sleep(0.75)
             total = tracks["total"]
             await ctx.send(f"{total} tracks queued!")
