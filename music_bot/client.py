@@ -2,7 +2,6 @@
 The discord bot's client class
 """
 
-import os
 import sys
 from datetime import datetime
 
@@ -17,7 +16,7 @@ class Bot(commands.Bot):
     def __init__(self, config):
         self.config = config
         self.start_time = datetime.utcnow()
-        self.cogs_ = ["spotify", "music"]
+        self._cogs = ["spotify", "music"]
         super().__init__(
             command_prefix=self.config.COMMAND_PREFIX,
             description="music_bot - A music bot for the Kipriakon diskort server",

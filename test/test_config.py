@@ -1,16 +1,14 @@
 import unittest
-import configparser
-import os
 
 from music_bot.config import Config
 
-CONFIG_FILE = ".\\test\\test_config.ini"
+TEST_CONFIG_FILE = ".\\test\\test_config.ini"
 SECTIONS = ["CREDENTIALS", "PERMISSIONS", "CHAT"]
 
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
-        self.config = Config(config_file=CONFIG_FILE)
+        self.config = Config(config_file=TEST_CONFIG_FILE)
 
     def tearDown(self):
         del self.config
