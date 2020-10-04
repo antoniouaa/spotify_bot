@@ -1,11 +1,8 @@
 import os
 import sys
-import logging
 import configparser
 
 from .errors import ConfigurationError
-
-log = logging.getLogger(__name__)
 
 
 class Config:

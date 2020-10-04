@@ -1,5 +1,4 @@
 import time
-import logging
 
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -41,7 +40,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
     @commands.command(name="register", aliases=["join", "signup"])
     async def register(self, ctx, *user_info):
         if len(user_info) < 2:
-            logger.error(f"Error using the command: too few arguments ({ctx.author})")
+            print(f"Error using the command: too few arguments ({ctx.author})")
             raise discord.ClientException("Improper command usage")
         display_name = " ".join(user_info[:-1])
         user_id = user_info[-1]
