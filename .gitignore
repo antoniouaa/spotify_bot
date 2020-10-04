@@ -24,3 +24,6 @@ users.json
 
 # Tests
 *test*.*
+
+# Misc
+**/spotify_bot.py
