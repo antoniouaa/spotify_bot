@@ -52,7 +52,7 @@ if __name__ == "__main__":
     try:
         config = Config("config.ini")
     except IOError as err:
-        logger.error("Unable to read configuration file", exc_info=error)
+        logger.error("Unable to read configuration file", exc_info=err)
         sys.exit(1)
 
     logger.info("Starting bot")
