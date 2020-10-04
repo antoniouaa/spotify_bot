@@ -109,7 +109,7 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 return (id_, ext_urls, items["name"])
         raise ValueError("Playlist does not exist")
 
-    #@commands.command(aliases=["play_from", "play_list"])
+    # @commands.command(aliases=["play_from", "play_list"])
     async def play_from_playlist(self, ctx, *request_info):
         """Fetches a list of the songs in a playlist, given it's name and its owner's name"""
         if len(request_info) != 2:
@@ -131,14 +131,14 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 additional_types=["track"],
             )
             pl_embed = discord.Embed(title="Results", description="Query Results")
-            addToQueue=[]
+            addToQueue = []
             for track in tracks["items"]:
                 name = track["track"]["name"]
                 artists = track["track"]["artists"]
                 artists_name = " ".join(artist["name"] for artist in artists)
-                #await ctx.send(f"adding {name} {artists_name}")
+                # await ctx.send(f"adding {name} {artists_name}")
                 addToQueue.append(f"{name} - {artists_name}")
-                #time.sleep(0.75)
+                # time.sleep(0.75)
             total = tracks["total"]
             await ctx.send(f"{total} tracks queued!")
             return addToQueue

@@ -22,7 +22,6 @@ class Bot(commands.Bot):
             command_prefix=self.config.COMMAND_PREFIX,
             description="music_bot - A music bot for the Kipriakon diskort server",
         )
-        
 
     def run_with_token(self):
         if not self.config._TOKEN:
@@ -38,6 +37,6 @@ class Bot(commands.Bot):
         spotify = Spotify(self.config)
         self.add_cog(spotify)
         print("Loaded cog: Spotify")
-        music = Music(self,spotify)
+        music = Music(self, spotify)
         self.add_cog(music)
         print("Loaded cog: Music")

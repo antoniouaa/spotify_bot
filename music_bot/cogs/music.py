@@ -56,7 +56,7 @@ class Music(commands.Cog):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         self.bot = bot
-        self.sp=sp
+        self.sp = sp
         self.playQueue = []
 
     @commands.command(name="join", aliases=["here", "voice"])
@@ -71,6 +71,7 @@ class Music(commands.Cog):
 
     async def playYT(self, context):
         print(self.playQueue)
+
         def ytNext(e):
             if self.playQueue:
                 self.playQueue.pop(0)
@@ -85,18 +86,20 @@ class Music(commands.Cog):
                 await context.send(f"Now playing: {player.title}")
             else:
                 await context.send(f"Playlist empty")
-        
-    @commands.command(name="play_spotify",aliases=["play_from"])
-    async def play_spotify(self,ctx,*args):
-        
-        q=await self.sp.play_from_playlist(ctx,args[0],args[1])
-        embedVar = discord.Embed(title="Added Playlist", description="Playlist info", color=0x00ff00)
-        for i,s in enumerate(q):
-            embedVar.add_field(name=str(i)+".", value=s, inline=True)
+
+    @commands.command(name="play_spotify", aliases=["play_from"])
+    async def play_spotify(self, ctx, *args):
+
+        q = await self.sp.play_from_playlist(ctx, args[0], args[1])
+        embedVar = discord.Embed(
+            title="Added Playlist", description="Playlist info", color=0x00FF00
+        )
+        for i, s in enumerate(q):
+            embedVar.add_field(name=str(i) + ".", value=s, inline=True)
         await ctx.send(embed=embedVar)
 
         await ctx.send(f"Adding {len(q)} songs to queue")
-        self.playQueue=self.playQueue+q
+        self.playQueue = self.playQueue + q
         if not ctx.voice_client.is_playing():
             await self.playYT(ctx)
 
@@ -124,7 +127,7 @@ class Music(commands.Cog):
     @commands.command(name="stop", aliases=["kill", "silence"])
     async def stop(self, ctx):
         """Stops and disconnects the bot from voice"""
-        self.playQueue=[]
+        self.playQueue = []
         await ctx.voice_client.disconnect()
 
     @yt.before_invoke
