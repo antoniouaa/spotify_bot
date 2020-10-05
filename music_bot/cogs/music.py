@@ -41,7 +41,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
         data = await loop.run_in_executor(
-            None, lambda: ytdl.extract_info(url, download=not stream)
+            None, lambda: ytdl.extract_info(f"ytsearch: {url}", download=not stream)
         )
 
         if "entries" in data:
@@ -69,23 +69,23 @@ class Music(commands.Cog):
     async def queueSong(self, keywords):
         self.playQueue.append(keywords)
 
-    async def playYT(self, context):
-        print(self.playQueue)
+    async def playYT(self, ctx):
+        print(f"<{', '.join(self.playQueue)}>")
 
         def ytNext(e):
             if self.playQueue:
                 self.playQueue.pop(0)
-                asyncio.run_coroutine_threadsafe(self.playYT(context), self.loop)
+                asyncio.run_coroutine_threadsafe(self.playYT(ctx), self.loop)
 
-        async with context.typing():
+        async with ctx.typing():
             if self.playQueue:
                 player = await YTDLSource.from_url(
                     self.playQueue[0], loop=self.bot.loop
                 )
-                context.voice_client.play(player, after=ytNext)
-                await context.send(f"Now playing: {player.title}")
+                ctx.voice_client.play(player, after=ytNext)
+                await ctx.send(f"Now playing: {player.title}")
             else:
-                await context.send(f"Playlist empty")
+                await ctx.send(f"Playlist empty")
 
     @commands.command(name="play_spotify", aliases=["play_from"])
     async def play_spotify(self, ctx, *args):
@@ -105,6 +105,7 @@ class Music(commands.Cog):
     async def yt(self, ctx, *, url):
         """Queries youtube using the terms given and plays back the first result"""
         await ctx.send(f"Adding {url} to queue")
+        print(f"Song requested: {url}")
         await self.queueSong(url)
         if not ctx.voice_client.is_playing():
             await self.playYT(ctx)
