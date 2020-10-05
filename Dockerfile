@@ -17,11 +17,11 @@ RUN apt-get -y update \
 ADD requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
-WORKDIR /usr/src/music_bot
+WORKDIR /music_bot
 ADD . ./
 
 # Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /usr/src
+RUN useradd appuser && chown -R appuser /music_bot
 USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
