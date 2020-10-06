@@ -3,10 +3,13 @@ Used to start up the bot and setup logging
 """
 
 import argparse
+import time
 import sys
 
 from .client import Bot
 from .config import Config
+
+from discord.ext import commands
 
 
 def parse_arguments():
@@ -27,4 +30,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
     bot = Bot(config)
+
+    @bot.command()
+    @commands.is_owner()
+    async def shutdown(ctx):
+        print("Shutting down")
+        await ctx.bot.close()
+
     bot.run_with_token()
