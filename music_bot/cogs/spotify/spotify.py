@@ -6,20 +6,21 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import discord
 from discord.ext import commands
 
-from ..db import DB
-from .music import Music
+from ...db import DB
 
 
 class Spotify(commands.Cog, spotipy.Spotify):
-    def __init__(self, config):
+    def __init__(self, bot):
+        self.bot = bot
+        self.config = self.bot.config
         self.db_config = (
-            config.MONGO_USERNAME,
-            config.MONGO_PASSWORD,
-            config.MONGO_DBNAME,
+            self.config.MONGO_USERNAME,
+            self.config.MONGO_PASSWORD,
+            self.config.MONGO_DBNAME,
         )
         self.db = DB(*self.db_config)
-        self.spotify_id = config._SPOTIFY_CLIENT_ID
-        self.spotify_secret = config._SPOTIFY_CLIENT_SECRET
+        self.spotify_id = self.config._SPOTIFY_CLIENT_ID
+        self.spotify_secret = self.config._SPOTIFY_CLIENT_SECRET
         super(Spotify, self).__init__(
             auth_manager=SpotifyClientCredentials(
                 client_id=self.spotify_id, client_secret=self.spotify_secret
