@@ -14,6 +14,9 @@ class DB:
         )
         self.db = self.client[db_name]
 
+    def close(self):
+        self.client.close()
+
     def register_new_user(self, id, name):
         """Registers a new user"""
         user = {"spotify_id": id, "user": name.lower()}

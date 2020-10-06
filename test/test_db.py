@@ -46,6 +46,7 @@ class TestConfig(unittest.TestCase):
         return ids
 
     def tearDown(self):
+        self.db.close()
         del self.sample_users
         del self.config
         del self.db
