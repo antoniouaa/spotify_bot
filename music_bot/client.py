@@ -2,21 +2,22 @@
 The discord bot's client class
 """
 
+import os
 import sys
 from datetime import datetime
 
 import discord
 from discord.ext import commands
 
-from .cogs.spotify import Spotify
-from .cogs.music import Music
+from .cogs.music.music import Music
+from .cogs.spotify.spotify import Spotify
 
 
 class Bot(commands.Bot):
     def __init__(self, config):
         self.config = config
         self.start_time = datetime.utcnow()
-        self._cogs = ["spotify", "music"]
+        self.available_cogs = {"spotify": None, "music": None}
         super().__init__(
             command_prefix=self.config.COMMAND_PREFIX,
             description="music_bot - A music bot for the Kipriakon diskort server",
@@ -33,9 +34,10 @@ class Bot(commands.Bot):
 
     async def on_ready(self):
         print(f"Logged in as {self.user}")
-        spotify = Spotify(self.config)
-        self.add_cog(spotify)
-        print("Loaded cog: Spotify")
-        music = Music(self, spotify)
-        self.add_cog(music)
-        print("Loaded cog: Music")
+        sp = Spotify(self)
+        mu = Music(self, sp)
+        self.available_cogs.update({"spotify": sp, "music": mu})
+        for name, c in self.available_cogs.items():
+            self.add_cog(c)
+        print(self.cogs)
+        print("All cogs successfully loaded")

@@ -15,10 +15,12 @@ class TestClient(unittest.TestCase):
 
     def tearDown(self):
         del self.config
+        self.bot.logout()
         del self.bot
-
-    def test_client_cogs(self):
-        self.assertEqual(self.bot._cogs, ["spotify", "music"])
 
     def test_client_exception(self):
         self.assertRaises(discord.errors.LoginFailure, self.bot.run_with_token())
+
+    def test_client_reads_cog_names(self):
+        expected = ["spotify", "music"]
+        self.assertEqual(expected, list(self.bot.available_cogs.keys()))
