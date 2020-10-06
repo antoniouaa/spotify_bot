@@ -70,8 +70,6 @@ class Music(commands.Cog):
         self.playQueue.append(keywords)
 
     async def playYT(self, ctx):
-        print(f"<{', '.join(self.playQueue)}>")
-
         def ytNext(e):
             if self.playQueue:
                 self.playQueue.pop(0)
