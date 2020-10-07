@@ -28,6 +28,7 @@ ffmpeg_options = {"options": "-vn"}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
+
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
@@ -40,7 +41,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
-        
+
         data = await loop.run_in_executor(
             None, lambda: ytdl.extract_info(f"ytsearch: {url}", download=not stream)
         )
@@ -68,9 +69,11 @@ class Music(commands.Cog):
         try:
             os.mkdir("cache/")
         except OSError:
-            print ("Creation of the cache directory failed (already exists or insufficient priviledges)")
+            print(
+                "Creation of the cache directory failed (already exists or insufficient priviledges)"
+            )
         else:
-            print ("Successfully created the cache directory")
+            print("Successfully created the cache directory")
         os.chdir("cache/")
 
     async def queueSong(self, keywords):
@@ -79,13 +82,15 @@ class Music(commands.Cog):
 
     async def playYT(self, ctx):
         """Plays the first song in the song queue"""
+
         def ytNext(e):
             """Removes the first song and plays the next one"""
+
             def purge(pat):
-                '''deletes all files mathcing pat glob from the current working dir'''
+                """deletes all files mathcing pat glob from the current working dir"""
                 for f in glob.glob(pat):
-                    print("deleting "+str(os.path.join(os.getcwd(),f)))
-                    os.remove(os.path.join(os.getcwd(),f))
+                    print("deleting " + str(os.path.join(os.getcwd(), f)))
+                    os.remove(os.path.join(os.getcwd(), f))
 
             if self.playQueue:
                 self.playQueue.pop(0)
