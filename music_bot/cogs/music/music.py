@@ -53,27 +53,27 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 class Music(commands.Cog):
     def __init__(self, bot, sp):
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
+        # Bot handle
         self.bot = bot
+
+        # Spotify handle
         self.sp = sp
+
+        # Song queue
         self.playQueue = []
 
-    @commands.command(name="join", aliases=["here", "voice"])
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
-        """Joins a voice channel"""
-        if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
-        await channel.connect()
-
     async def queueSong(self, keywords):
+        """Adds the keywords string to the song queue"""
         self.playQueue.append(keywords)
 
     async def playYT(self, ctx):
+        """Plays the first song in the song queue"""
+
         def ytNext(e):
+            """Removes the first song and plays the next one"""
             if self.playQueue:
                 self.playQueue.pop(0)
-                asyncio.run_coroutine_threadsafe(self.playYT(ctx), self.loop)
+                asyncio.run_coroutine_threadsafe(self.playYT(ctx), self.bot.loop)
 
         async with ctx.typing():
             if self.playQueue:
@@ -85,9 +85,20 @@ class Music(commands.Cog):
             else:
                 await ctx.send(f"Playlist empty")
 
+    @commands.command(name="join", aliases=["here", "voice"])
+    async def join(self, ctx, *, channel: discord.VoiceChannel):
+        """Joins the command issuer's voice channel"""
+        if ctx.voice_client is not None:
+            return await ctx.voice_client.move_to(channel)
+        await channel.connect()
+
     @commands.command(name="play_spotify", aliases=["play_from"])
     async def play_spotify(self, ctx, *args):
+        """Adds the songs from the provided spotify playlist to the queue"""
+        # Get the song names using the spotify cog
         q = await self.sp.play_from_playlist(ctx, args[0], args[1])
+
+        # Gather playlist info into an embed to output
         embedVar = discord.Embed(
             title="Added Playlist", description="Playlist info", color=0x00FF00
         )
@@ -95,7 +106,11 @@ class Music(commands.Cog):
             embedVar.add_field(name=f"{i}.", value=s, inline=True)
         await ctx.send(embed=embedVar)
         await ctx.send(f"Adding {len(q)} songs to queue")
+
+        # Append the playlist to the queue
         self.playQueue = self.playQueue + q
+
+        # Start playing if not already playing something
         if not ctx.voice_client.is_playing():
             await self.playYT(ctx)
 
@@ -103,14 +118,21 @@ class Music(commands.Cog):
     async def yt(self, ctx, *, url):
         """Queries youtube using the terms given and plays back the first result"""
         await ctx.send(f"Adding {url} to queue")
-        print(f"Song requested: {url}")
+
+        # Append the song to the queue
         await self.queueSong(url)
+
+        # Start playing if not already playing something
         if not ctx.voice_client.is_playing():
             await self.playYT(ctx)
 
     @commands.command(name="skip", aliases=["next"])
     async def skip(self, ctx):
+        """Skips the currently playing song and plays the next one"""
+        # Force interrupt the play function (ctx.voice_client.play)
         ctx.voice_client.stop()
+
+        # Play the next song
         await self.playYT(ctx)
 
     @commands.command(name="volume", aliases=["level", "vol"])
