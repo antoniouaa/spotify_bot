@@ -2,6 +2,7 @@ import asyncio
 
 import discord
 import youtube_dl
+import os, glob
 
 from discord.ext import commands
 
@@ -27,7 +28,6 @@ ffmpeg_options = {"options": "-vn"}
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
-
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
@@ -40,6 +40,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
+        
         data = await loop.run_in_executor(
             None, lambda: ytdl.extract_info(f"ytsearch: {url}", download=not stream)
         )
@@ -48,6 +49,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
+
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
@@ -62,18 +64,34 @@ class Music(commands.Cog):
         # Song queue
         self.playQueue = []
 
+        # Make cache dir
+        try:
+            os.mkdir("cache/")
+        except OSError:
+            print ("Creation of the cache directory failed (already exists or insufficient priviledges)")
+        else:
+            print ("Successfully created the cache directory")
+        os.chdir("cache/")
+
     async def queueSong(self, keywords):
         """Adds the keywords string to the song queue"""
         self.playQueue.append(keywords)
 
     async def playYT(self, ctx):
         """Plays the first song in the song queue"""
-
         def ytNext(e):
             """Removes the first song and plays the next one"""
+            def purge(pat):
+                '''deletes all files mathcing pat glob from the current working dir'''
+                for f in glob.glob(pat):
+                    print("deleting "+str(os.path.join(os.getcwd(),f)))
+                    os.remove(os.path.join(os.getcwd(),f))
+
             if self.playQueue:
                 self.playQueue.pop(0)
                 asyncio.run_coroutine_threadsafe(self.playYT(ctx), self.bot.loop)
+                # Clean up cache. If errors occur duting skip etc, this is the first place to look for a fix
+                purge("youtube*")
 
         async with ctx.typing():
             if self.playQueue:
