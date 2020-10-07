@@ -8,21 +8,20 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Update and install dependencies
-RUN apt-get -y update \
-    && apt-get -y install ffmpeg \
-    && apt-get -y install python3 \
-    && apt-get -y install python3-pip
+RUN apt-get -y update && \
+    apt-get -y install ffmpeg \
+    python3 \
+    python3-pip
+
+COPY . /music_bot
+WORKDIR /music_bot
 
 # Install pip requirements
-ADD requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
-WORKDIR /music_bot
-ADD . ./
-
 # Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /music_bot
-USER appuser
+RUN useradd bot && chown -R bot /music_bot
+USER bot
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["python3", "-m", "music_bot", "config.ini"]
