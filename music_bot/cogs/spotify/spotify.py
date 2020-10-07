@@ -86,28 +86,34 @@ class Spotify(commands.Cog, spotipy.Spotify):
                 await ctx.send(
                     "--help\nCommand `playlist`:\n\tReturns a link to the spotify playlist requested.\nProper usage:\n\t`$playlist <display name> <playlist name>`"
                 )
-            (
-                pl_id,
-                url,
-                pl_name,
-            ) = self.get_user_playlist_by_keyword_and_display_name(user, keyword)
-            print(f"Playlist found: {pl_id}")
-            pl_embed = discord.Embed(Title=pl_name, description="Playlist request")
-            pl_embed.add_field(name="Requested by", value=user, inline=True)
-            pl_embed.add_field(name="Link", value=url, inline=True)
-            await ctx.send(embed=pl_embed)
+            playlists = self.get_user_playlist_by_keyword_and_display_name(
+                user, keyword
+            )
+            for pl_id, url, pl_name in playlists:
+                print(f"Playlist found: {pl_id}")
+                pl_embed = discord.Embed(
+                    Title="Playlist Request", description="Playlist request"
+                )
+                pl_embed.add_field(name="Playlist Title", value=pl_name, inline=True)
+                pl_embed.add_field(name="Requested by", value=user, inline=True)
+                pl_embed.add_field(name="Link", value=url, inline=True)
+                await ctx.send(embed=pl_embed)
 
     def get_user_playlist_by_keyword_and_display_name(
-        self, display_name, playlist_name
+        self, display_name, playlist_name=None
     ):
         """Finds a user's ID by their username and then retrieves a playlist's ID by its provided name"""
         user_id = self.db.fetch_userid_by_username(display_name)
         playlist = self.user_playlists(user=user_id, limit=5)
+        playlists_to_return = []
         for items in playlist["items"]:
             if playlist_name.lower() in items["name"].lower():
                 id_ = items["id"]
                 ext_urls = items["external_urls"]["spotify"]
-                return (id_, ext_urls, items["name"])
+                name = items["name"].lower()
+                playlists_to_return.append((id_, ext_urls, name))
+        else:
+            return playlists_to_return
         raise ValueError("Playlist does not exist")
 
     async def play_from_playlist(self, ctx, *request_info):
@@ -119,24 +125,33 @@ class Spotify(commands.Cog, spotipy.Spotify):
             raise discord.ClientException("Improper command usage")
         else:
             user, keyword = request_info
-            (
-                pl_id,
-                url,
-                npl_name,
-            ) = self.get_user_playlist_by_keyword_and_display_name(user, keyword)
-            tracks = self.playlist_items(
-                pl_id,
-                offset=0,
-                fields="items.track.id,items.track.name,items.track.artists,total",
-                additional_types=["track"],
+            playlists = self.get_user_playlist_by_keyword_and_display_name(
+                user, keyword
             )
-            pl_embed = discord.Embed(title="Results", description="Query Results")
-            addToQueue = []
-            for track in tracks["items"]:
-                name = track["track"]["name"]
-                artists = track["track"]["artists"]
-                artists_name = " ".join(artist["name"] for artist in artists)
-                addToQueue.append(f"{name} - {artists_name}")
-            total = tracks["total"]
-            await ctx.send(f"{total} tracks queued!")
-            return addToQueue
+            for pl_id, url, pl_name in playlists:
+                if pl_name == keyword:
+                    tracks = self.playlist_items(
+                        pl_id,
+                        offset=0,
+                        fields="items.track.id,items.track.name,items.track.external_urls,items.track.artists,items.track.album.name",
+                        additional_types=["track"],
+                    )
+                    pl_embed = discord.Embed(
+                        title="Results", description="Query Results"
+                    )
+                    addToQueue = []
+                    for track in tracks["items"]:
+                        name = track["track"]["name"]
+                        artists = track["track"]["artists"]
+                        album = track["track"]["album"]["name"]
+                        url = track["track"]["external_urls"]["spotify"]
+
+                        artists_name = ", ".join(artist["name"] for artist in artists)
+                        addToQueue.append(
+                            (
+                                f"{name} - {artists_name}",
+                                album,
+                                url,
+                            )
+                        )
+                    return addToQueue

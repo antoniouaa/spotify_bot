@@ -36,8 +36,15 @@ class Bot(commands.Bot):
         print(f"Logged in as {self.user}")
         sp = Spotify(self)
         mu = Music(self, sp)
+        await self.change_presence(
+            activity=discord.Activity(
+                name="Spotify",
+                type="3",
+                state="Listening",
+                details="Come request a song from me!",
+            )
+        )
         self.available_cogs.update({"spotify": sp, "music": mu})
         for name, c in self.available_cogs.items():
             self.add_cog(c)
-        print(self.cogs)
         print("All cogs successfully loaded")

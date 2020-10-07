@@ -100,15 +100,20 @@ class Music(commands.Cog):
 
         # Gather playlist info into an embed to output
         embedVar = discord.Embed(
-            title="Added Playlist", description="Playlist info", color=0x00FF00
+            title="Playlist Queued", description="Playlist info", color=0x00FF00
         )
-        for i, s in enumerate(q):
-            embedVar.add_field(name=f"{i}.", value=s, inline=True)
+        for i, (song, album, url) in enumerate(q[:3], start=1):
+            embedVar.add_field(
+                name=f"{i}) Song Name and Artist", value=f"{song}", inline=True
+            )
+            embedVar.add_field(name="Album", value=album, inline=True)
+            embedVar.add_field(name="URL", value=url, inline=True)
         await ctx.send(embed=embedVar)
         await ctx.send(f"Adding {len(q)} songs to queue")
+        song_list = [song for song, _, _ in q]
 
         # Append the playlist to the queue
-        self.playQueue = self.playQueue + q
+        self.playQueue = self.playQueue + song_list
 
         # Start playing if not already playing something
         if not ctx.voice_client.is_playing():
